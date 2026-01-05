@@ -8,18 +8,11 @@
  
 
 </head>
-<!-- BACKGROUND MUSIC -->
-<audio id="bgMusic" loop>
-  <source src="Larry June, 2 Chainz & The Alchemist - Life Is Beautiful (Official Video).mp3" type="audio/mpeg">
-</audio>
 
-<!-- MUSIC TOGGLE -->
-<div id="musicToggle" onclick="toggleMusic()">
-  <img id="musicIcon" src="images/speaker-off.png" alt="Music">
-</div>
 
 <body>
 <!-- LOADING SCREEN -->
+ 
 <div id="loadingScreen">
   <div class="loader-content">
     <img src="images/LOGO.png" alt="Flare Logo" class="loader-logo">
@@ -31,12 +24,19 @@
   <div class="brand" onclick="showPage('home')" style="cursor:pointer;">
   <img src="images/web.png" alt="Flare Dept Logo" class="logo">
 </div>
+<audio id="bgMusic" loop preload="auto">
+  <source src="bg.mp3" type="audio/mpeg">
+</audio>
 
+<!-- MUSIC TOGGLE -->
+<div id="musicToggle" onclick="toggleMusic()">
+  <img id="musicIcon" src="images/MUTE.png" alt="Music">
+</div>
 
  <nav class="nav">
   <a onclick="showPage('home')">HOME</a>
-  <a onclick="showPage('collection')">COLLECTION</a>
-  <a onclick="showPage('contact')">CONTACT</a>
+  <a onclick="showPage('shop')">SHOP</a>
+<a onclick="showPage('sizechart')">SIZE CHART</a>
   <a onclick="showPage('login')">LOGIN</a>
 
   <div class="cart-icon" onclick="showPage('checkout')">
@@ -83,7 +83,8 @@
 </section>
 
 <!-- COLLECTION -->
-<section id="collection" class="page hidden">
+<section id="shop" class="page hidden">
+
   <div class="collection">
     <div class="slider">
       <img id="productImg" src="images/BLACK.jpg">
@@ -135,6 +136,23 @@
     </div>
   </div>
 </section>
+<section id="sizechart" class="page hidden">
+  <h2>SIZE CHART</h2>
+
+  <div class="sizechart-box">
+    <img 
+      src="images/sizechart.jpg" 
+      alt="Size Chart"
+      onclick="openImage(this.src)"
+    >
+  </div>
+</section>
+
+<!-- IMAGE MODAL -->
+<div id="imgModal" class="hidden" onclick="closeImage()">
+  <img id="modalImg">
+</div>
+
 
 <!-- LOGIN -->
 <section id="login" class="page hidden">
@@ -208,6 +226,9 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 </body>
 </html>
