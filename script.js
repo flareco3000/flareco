@@ -4,16 +4,15 @@
 function showPage(id) {
   showLoader();
 
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     document.querySelectorAll(".page").forEach(p =>
       p.classList.add("hidden")
     );
     document.getElementById(id).classList.remove("hidden");
-
-    // Let browser paint first (feels like network)
-    setTimeout(hideLoader, 200);
-  });
+    hideLoader();
+  }, 600);
 }
+
 
 
 
@@ -189,9 +188,7 @@ function placeOrder() {
 function showLoader() {
   const loader = document.getElementById("loadingScreen");
   loader.style.display = "flex";
-  requestAnimationFrame(() => {
-    loader.style.opacity = "1";
-  });
+  loader.style.opacity = "1";
 }
 
 function hideLoader() {
@@ -201,6 +198,7 @@ function hideLoader() {
     loader.style.display = "none";
   }, 400);
 }
+
 
 function addToCart() {
   showLoader();
