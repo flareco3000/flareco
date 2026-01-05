@@ -56,6 +56,14 @@ function setColor(color) {
 function setSize(size) {
   currentSize = size;
 }
+function openImage(src) {
+  document.getElementById("modalImg").src = src;
+  document.getElementById("imgModal").classList.remove("hidden");
+}
+
+function closeImage() {
+  document.getElementById("imgModal").classList.add("hidden");
+}
 
 /* =====================
    IMAGE SLIDER
@@ -159,42 +167,50 @@ if (paymentSelect) {
 /* =====================
    PLACE ORDER
 ===================== */
-function placeOrder() {
+async function placeOrder() {
   showLoader();
 
-  setTimeout(() => {
-    const requiredFields = document.querySelectorAll(".required");
-    const errorMsg = document.getElementById("formError");
-    let valid = true;
+  const name = fullName.value.trim();
+  const addressVal = address.value.trim();
+  const emailVal = email.value.trim();
+  const contactVal = contact.value.trim();
 
-    requiredFields.forEach(field => {
-      if (!field.value.trim()) {
-        field.classList.add("error");
-        valid = false;
-      } else {
-        field.classList.remove("error");
-      }
+  if (!name || !addressVal || !emailVal || !contactVal || cart.length === 0) {
+    hideLoader();
+    alert("Fill all required fields.");
+    return;
+  }
+
+  const orderData = {
+    customer: { name, addressVal, emailVal, contactVal },
+    cart,
+    total: cart.reduce((t,i)=>t+i.price,0),
+    createdAt: new Date()
+  };
+
+  try {
+    // SAVE TO DATABASE
+    await addDoc(collection(db, "orders"), orderData);
+
+    // SEND EMAIL TO YOU
+    await emailjs.send("SERVICE_ID","TEMPLATE_ID",{
+      name,
+      email: emailVal,
+      message: JSON.stringify(orderData, null, 2)
     });
 
-    if (cart.length === 0) {
-      hideLoader();
-      alert("Your cart is empty!");
-      return;
-    }
-
-    if (!valid) {
-      hideLoader();
-      if (errorMsg) errorMsg.classList.remove("hidden");
-      return;
-    }
-
-    if (errorMsg) errorMsg.classList.add("hidden");
-
-    alert("✅ Order placed successfully!");
+    alert("✅ Order sent successfully!");
     clearCart();
     showPage("home");
-  }, 500);
+
+  } catch (err) {
+    alert("❌ Order failed. Try again.");
+    console.error(err);
+  }
+
+  hideLoader();
 }
+
 
 /* =====================
    BACKGROUND MUSIC
@@ -204,20 +220,21 @@ const musicIcon = document.getElementById("musicIcon");
 
 let musicEnabled = false;
 
+// Unlock audio on first user interaction
 document.addEventListener("click", () => {
   if (bgMusic) bgMusic.volume = 0.4;
 }, { once: true });
 
 function toggleMusic() {
-  if (!bgMusic) return;
+  if (!bgMusic || !musicIcon) return;
 
   if (bgMusic.paused) {
     bgMusic.play().catch(() => {});
-    musicIcon.src = "images/speaker-on.png";
+    musicIcon.src = "images/UNMUTED.png";
     musicEnabled = true;
   } else {
     bgMusic.pause();
-    musicIcon.src = "images/speaker-off.png";
+    musicIcon.src = "images/MUTE.png";
     musicEnabled = false;
   }
 
@@ -229,6 +246,38 @@ window.addEventListener("load", () => {
   if (saved === "true" && bgMusic) {
     bgMusic.volume = 0.4;
     bgMusic.play().catch(() => {});
-    musicIcon.src = "images/speaker-on.png";
+    musicIcon.src = "images/UNMUTED.png";
   }
+});
+
+
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("musicEnabled");
+  if (saved === "true" && bgMusic) {
+    bgMusic.volume = 0.4;
+    bgMusic.play().catch(() => {});
+    musicIcon.src = "images/UNMUTED.png";
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  showLoader();
+});
+
+window.addEventListener("load", () => {
+  hideLoader();
+});
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+emailjs.init("YOUR_PUBLIC_KEY");
+document.querySelectorAll("img").forEach(img=>{
+  img.onload = () => img.classList.add("loaded");
 });
