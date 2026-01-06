@@ -200,7 +200,7 @@ if (paymentSelect) {
 }
 
 /* =====================
-   PLACE ORDER (REALTIME NETWORK)
+   PLACE ORDER (EMAIL ONLY)
 ===================== */
 async function placeOrder() {
   startRequest();
@@ -228,18 +228,16 @@ async function placeOrder() {
   }
 
   const orderData = {
-    customer: { name, address: addressVal, email: emailVal, contact: contactVal },
+    name,
+    address: addressVal,
+    email: emailVal,
+    contact: contactVal,
     cart,
-    total: cart.reduce((t, i) => t + i.price, 0),
-    createdAt: new Date().toISOString()
+    total: cart.reduce((t, i) => t + i.price, 0)
   };
 
   try {
-    await addDoc(collection(db, "orders"), orderData);
-
     await emailjs.send("SERVICE_ID", "TEMPLATE_ID", {
-      name,
-      email: emailVal,
       message: JSON.stringify(orderData, null, 2)
     });
 
@@ -280,8 +278,7 @@ function toggleMusic() {
 }
 
 window.addEventListener("load", () => {
-  const saved = localStorage.getItem("musicEnabled");
-  if (saved === "true" && bgMusic) {
+  if (localStorage.getItem("musicEnabled") === "true" && bgMusic) {
     bgMusic.volume = 0.4;
     bgMusic.play().catch(()=>{});
     musicIcon.src = "images/UNMUTED.png";
@@ -301,30 +298,8 @@ document.querySelectorAll("img").forEach(img => {
 });
 
 /* =====================
-   FIREBASE + EMAILJS
-===================== */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-emailjs.init("YOUR_PUBLIC_KEY");
-
-/* =====================
    INITIAL LOADER
 ===================== */
-document.addEventListener("DOMContentLoaded", () => {
-  showLoader();
-});
-
-window.addEventListener("load", () => {
-  hideLoader();
-});
+document.addEventListener("DOMContentLoaded", showLoader);
+window.addEventListener("load", hideLoader);
 
