@@ -1,151 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flare</title>
-  <link rel="stylesheet" href="styles.css">
- 
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flare</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 
-
 <body>
-<!-- LOADING SCREEN -->
- 
+
+<!-- LOADER -->
 <div id="loadingScreen">
-  <div class="loader-content">
-    <img src="images/LOGO.png" alt="Flare Logo" class="loader-logo">
-  </div>
+  <img src="images/LOGO.png" class="loader-logo">
 </div>
 
 <header class="site-header">
   <div class="header-inner">
-  <div class="brand" onclick="showPage('home')" style="cursor:pointer;">
-  <img src="images/web.png" alt="Flare Dept Logo" class="logo">
-</div>
-<audio id="bgMusic" loop preload="auto">
-  <source src="bg.mp3" type="audio/mpeg">
-</audio>
 
-<!-- MUSIC TOGGLE -->
-<div id="musicToggle" onclick="toggleMusic()">
-  <img id="musicIcon" src="images/MUTE.png" alt="Music">
-</div>
+    <div class="brand" onclick="showPage('home')">
+      <img src="images/web.png">
+    </div>
 
- <nav class="nav">
-  <a onclick="showPage('home')">HOME</a>
-  <a onclick="showPage('shop')">SHOP</a>
-<a onclick="showPage('sizechart')">SIZE CHART</a>
-  <a onclick="showPage('login')">LOGIN</a>
+    <nav class="nav">
+      <a onclick="showPage('home')">HOME</a>
+      <a onclick="showPage('shop')">SHOP</a>
+      <a onclick="showPage('sizechart')">SIZE CHART</a>
+      <a onclick="showPage('login')">LOGIN</a>
 
-  <div class="cart-icon" onclick="showPage('checkout')">
-    <img src="images/cart.png" alt="Cart" class="cart-img">
-    <span id="cartCount">0</span>
-  </div>
-</nav>
-
-
-
-
-</div>
-
-</span>
-
-</span>
-
+      <div class="cart-icon" onclick="showPage('checkout')">
+        <img src="images/cart.png" class="cart-img">
+        <span id="cartCount">0</span>
+      </div>
     </nav>
+
   </div>
 </header>
 
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="bg.mp3" type="audio/mpeg">
+</audio>
 
+<div id="musicToggle" onclick="toggleMusic()">
+  <img id="musicIcon" src="images/MUTE.png">
+</div>
+
+<!-- HOME -->
 <section id="home" class="page">
   <div class="hero"></div>
-
- 
-
-  <!-- FEATURED ITEM (HOME ONLY) -->
-  <div class="featured">
-    <h2>FEATURED ITEM</h2>
-    <div class="featured-card">
-      <img src="images/BLACK.jpg" alt="NOIRCORE">
-      <h3>NOIRCORE</h3>
-      <p>₱550.00</p>
-      <button class="btn small" onclick="showPage('collection')">
-        VIEW ITEM
-      </button>
-    </div>
-  </div>
 </section>
 
-
-  </div>
-</section>
-
-<!-- COLLECTION -->
+<!-- SHOP -->
 <section id="shop" class="page hidden">
-
   <div class="collection">
+
     <div class="slider">
       <img id="productImg" src="images/BLACK.jpg">
-      <div class="slider-btns">
-        <button class="btn small" onclick="prevImg()">Prev</button>
-        <button class="btn small" onclick="nextImg()">Next</button>
-      </div>
+      <button class="btn small" onclick="prevImg()">Prev</button>
+      <button class="btn small" onclick="nextImg()">Next</button>
     </div>
 
     <div>
       <h2>NOIRCORE</h2>
-      <p class="price">₱550.00</p>
+      <p>₱550.00</p>
 
-      <h4>Color</h4>
-      <div class="options">
       <select onchange="setColor(this.value)">
-  <option value="BLACK">BLACK</option>
-  <option value="WHITE">WHITE</option>
-</select>
+        <option value="BLACK">BLACK</option>
+        <option value="WHITE">WHITE</option>
+      </select>
 
-  </select>
-
-      <h4>Size</h4>
       <select onchange="setSize(this.value)">
-  <option value="MEDIUM">MEDIUM</option>
-  <option value="LARGE">LARGE</option>
-  <option value="XL">XL</option>
-</select>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="LARGE">LARGE</option>
+        <option value="XL">XL</option>
+      </select>
 
-  </select>
       <button class="btn" onclick="addToCart()">ADD TO CART</button>
-      <button class="btn outline" onclick="showPage('checkout')">CHECKOUT</button>
     </div>
+
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="contact" class="page hidden">
-  <div class="contact-grid">
-    <img src="images/map.jpg">
-    <div>
-      <p><strong>Address:</strong> Obando, Bulacan</p>
-      <p><strong>Phone:</strong> +63 951 155 3161</p>
-      <p><strong>Email:</strong> markgusi92@gmail.com</p>
-      <p>
-        <a href="https://www.instagram.com/_flare777/">Instagram</a> 
-        <a href="https://www.facebook.com/flareworldwide1/">Facebook</a>
-      </p>
-    </div>
-  </div>
-</section>
+<!-- SIZE CHART -->
 <section id="sizechart" class="page hidden">
-  <h2>SIZE CHART</h2>
-
-  <div class="sizechart-box">
-    <img 
-      src="images/sizechart.jpg" 
-      alt="Size Chart"
-      onclick="openImage(this.src)"
-    >
-  </div>
+  <img src="images/sizechart.jpg" onclick="openImage(this.src)">
 </section>
 
 <!-- IMAGE MODAL -->
@@ -153,82 +91,160 @@
   <img id="modalImg">
 </div>
 
-
-<!-- LOGIN -->
-<section id="login" class="page hidden">
-
-  <!-- STEP 1 -->
-  <div class="login-box" id="loginStep1">
-    <h2>Login</h2>
-    <input id="loginEmail" placeholder="Email">
-    <button class="btn" onclick="sendCode()">SEND CODE</button>
-  </div>
-
-  <!-- STEP 2 -->
-  <div class="login-box hidden" id="loginStep2">
-    <h2>Enter Code</h2>
-    <input id="loginCode" placeholder="6-digit code">
-    <button class="btn" onclick="verifyCode()">SUBMIT</button>
-  </div>
-
-</section>
-
-
 <!-- CHECKOUT -->
 <section id="checkout" class="page hidden">
-  <h2>Checkout</h2>
-
   <div id="cartItems"></div>
-<h3>Total: ₱<span id="cartTotal">0</span></h3>
+  Total ₱<span id="cartTotal">0</span>
 
-  <button class="btn outline" onclick="clearCart()">CLEAR CART</button>
-  <button class="btn outline" onclick="showPage('collection')">ADD MORE ORDERS</button>
+  <input id="fullName" placeholder="Full Name">
+  <input id="address" placeholder="Address">
+  <input id="email" placeholder="Email">
+  <input id="contact" placeholder="Contact">
 
-  <h3>Shipping Info</h3>
-
-<input id="fullName" class="required" placeholder="Full Name">
-<input id="address" class="required" placeholder="Address">
-<input id="email" class="required" placeholder="Email">
-<input id="contact" class="required" placeholder="Contact Number">
-
-<textarea id="notes" placeholder="Notes (optional)"></textarea>
-
-<p id="formError" class="caution hidden">
- Please fill up all required fields.
-</p>
-
-
-
-  <h3>Shipping Method</h3>
-  <select>
-    <option>Metro Manila ₱120</option>
-    <option>Luzon ₱170</option>
-    <option>Visayas ₱200</option>
-    <option>Mindanao ₱230</option>
+  <select id="paymentMethod">
+    <option value="">Select Payment</option>
+    <option value="GCASH">GCASH</option>
+    <option value="COD">COD</option>
   </select>
-<div id="paymentDetails" style="margin-top:10px;"></div>
 
+  <div id="paymentDetails"></div>
 
-
-  <h3>Mode of Payment</h3>
-
-<select id="paymentMethod">
-  <option value="">-- Select Payment Method (Optional) --</option>
-  <option value="GCASH">GCASH</option>
-  <option value="COD">Cash on Delivery (COD)</option>
-</select>
-
-<div id="paymentDetails" style="margin-top:10px;"></div>
-<button class="btn" onclick="placeOrder()">PLACE ORDER</button>
+  <button class="btn" onclick="placeOrder()">PLACE ORDER</button>
+</section>
 
 <footer>
-  © 2025 Flare Co. All rights reserved 
+  © 2025 Flare Co. All rights reserved
 </footer>
 
 <script src="script.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flare</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- LOADER -->
+<div id="loadingScreen">
+  <img src="images/LOGO.png" class="loader-logo">
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+
+    <div class="brand" onclick="showPage('home')">
+      <img src="images/web.png">
+    </div>
+
+    <nav class="nav">
+      <a onclick="showPage('home')">HOME</a>
+      <a onclick="showPage('shop')">SHOP</a>
+      <a onclick="showPage('sizechart')">SIZE CHART</a>
+      <a onclick="showPage('login')">LOGIN</a>
+
+      <div class="cart-icon" onclick="showPage('checkout')">
+        <img src="images/cart.png" class="cart-img">
+        <span id="cartCount">0</span>
+      </div>
+    </nav>
+
+  </div>
+</header>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="bg.mp3" type="audio/mpeg">
+</audio>
+
+<div id="musicToggle" onclick="toggleMusic()">
+  <img id="musicIcon" src="images/MUTE.png">
+</div>
+
+<!-- HOME -->
+<section id="home" class="page">
+  <div class="hero"></div>
+</section>
+
+<!-- SHOP -->
+<section id="shop" class="page hidden">
+  <div class="collection">
+
+    <div class="slider">
+      <img id="productImg" src="images/BLACK.jpg">
+      <button class="btn small" onclick="prevImg()">Prev</button>
+      <button class="btn small" onclick="nextImg()">Next</button>
+    </div>
+
+    <div>
+      <h2>NOIRCORE</h2>
+      <p>₱550.00</p>
+
+      <select onchange="setColor(this.value)">
+        <option value="BLACK">BLACK</option>
+        <option value="WHITE">WHITE</option>
+      </select>
+
+      <select onchange="setSize(this.value)">
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="LARGE">LARGE</option>
+        <option value="XL">XL</option>
+      </select>
+
+      <button class="btn" onclick="addToCart()">ADD TO CART</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- SIZE CHART -->
+<section id="sizechart" class="page hidden">
+  <img src="images/sizechart.jpg" onclick="openImage(this.src)">
+</section>
+
+<!-- IMAGE MODAL -->
+<div id="imgModal" class="hidden" onclick="closeImage()">
+  <img id="modalImg">
+</div>
+
+<!-- CHECKOUT -->
+<section id="checkout" class="page hidden">
+  <div id="cartItems"></div>
+  Total ₱<span id="cartTotal">0</span>
+
+  <input id="fullName" placeholder="Full Name">
+  <input id="address" placeholder="Address">
+  <input id="email" placeholder="Email">
+  <input id="contact" placeholder="Contact">
+
+  <select id="paymentMethod">
+    <option value="">Select Payment</option>
+    <option value="GCASH">GCASH</option>
+    <option value="COD">COD</option>
+  </select>
+
+  <div id="paymentDetails"></div>
+
+  <button class="btn" onclick="placeOrder()">PLACE ORDER</button>
+</section>
+
+<footer>
+  © 2025 Flare Co. All rights reserved
+</footer>
+
+<script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+</body>
+</html>
+
 
 </body>
 </html>
