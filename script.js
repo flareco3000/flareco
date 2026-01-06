@@ -1,6 +1,8 @@
 /* =====================
-   LOADER
+   REALTIME NETWORK LOADER
 ===================== */
+let pendingRequests = 0;
+
 function showLoader() {
   const loader = document.getElementById("loadingScreen");
   if (!loader) return;
@@ -11,25 +13,52 @@ function showLoader() {
 function hideLoader() {
   const loader = document.getElementById("loadingScreen");
   if (!loader) return;
+  if (pendingRequests > 0) return;
   loader.style.opacity = "0";
   setTimeout(() => loader.style.display = "none", 400);
+}
+
+function startRequest() {
+  pendingRequests++;
+  showLoader();
+}
+
+function endRequest() {
+  pendingRequests = Math.max(0, pendingRequests - 1);
+  hideLoader();
 }
 
 /* =====================
    PAGE NAVIGATION
 ===================== */
 function showPage(id) {
-  showLoader();
+  startRequest();
 
-  requestAnimationFrame(() => {
-    document.querySelectorAll(".page").forEach(p =>
-      p.classList.add("hidden")
-    );
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.add("hidden")
+  );
 
-    const page = document.getElementById(id);
-    if (page) page.classList.remove("hidden");
+  const page = document.getElementById(id);
+  if (page) page.classList.remove("hidden");
 
-    setTimeout(hideLoader, 200);
+  const imgs = page ? page.querySelectorAll("img") : [];
+  let loaded = 0;
+
+  if (imgs.length === 0) {
+    endRequest();
+    return;
+  }
+
+  imgs.forEach(img => {
+    if (img.complete) {
+      loaded++;
+      if (loaded === imgs.length) endRequest();
+    } else {
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded === imgs.length) endRequest();
+      };
+    }
   });
 }
 
@@ -50,12 +79,20 @@ let currentSize = "MEDIUM";
 function setColor(color) {
   currentColor = color;
   const img = document.getElementById("productImg");
-  if (img) img.src = images[color];
+  if (!img) return;
+
+  startRequest();
+  img.onload = img.onerror = () => endRequest();
+  img.src = images[color];
 }
 
 function setSize(size) {
   currentSize = size;
 }
+
+/* =====================
+   IMAGE MODAL
+===================== */
 function openImage(src) {
   document.getElementById("modalImg").src = src;
   document.getElementById("imgModal").classList.remove("hidden");
@@ -88,20 +125,18 @@ let cart = [];
 const pricePerItem = 550;
 
 function addToCart() {
-  showLoader();
+  startRequest();
 
-  setTimeout(() => {
-    cart.push({
-      name: "NOIRCORE",
-      price: pricePerItem,
-      color: currentColor,
-      size: currentSize,
-      image: images[currentColor]
-    });
+  cart.push({
+    name: "NOIRCORE",
+    price: pricePerItem,
+    color: currentColor,
+    size: currentSize,
+    image: images[currentColor]
+  });
 
-    updateCartUI();
-    hideLoader();
-  }, 300);
+  updateCartUI();
+  endRequest();
 }
 
 function updateCartUI() {
@@ -165,10 +200,21 @@ if (paymentSelect) {
 }
 
 /* =====================
-   PLACE ORDER
+   PLACE ORDER (REALTIME NETWORK)
 ===================== */
 async function placeOrder() {
-  showLoader();
+  startRequest();
+
+  const fullName = document.getElementById("fullName");
+  const address = document.getElementById("address");
+  const email = document.getElementById("email");
+  const contact = document.getElementById("contact");
+
+  if (!fullName || !address || !email || !contact) {
+    alert("Form elements missing");
+    endRequest();
+    return;
+  }
 
   const name = fullName.value.trim();
   const addressVal = address.value.trim();
@@ -176,24 +222,22 @@ async function placeOrder() {
   const contactVal = contact.value.trim();
 
   if (!name || !addressVal || !emailVal || !contactVal || cart.length === 0) {
-    hideLoader();
     alert("Fill all required fields.");
+    endRequest();
     return;
   }
 
   const orderData = {
-    customer: { name, addressVal, emailVal, contactVal },
+    customer: { name, address: addressVal, email: emailVal, contact: contactVal },
     cart,
-    total: cart.reduce((t,i)=>t+i.price,0),
-    createdAt: new Date()
+    total: cart.reduce((t, i) => t + i.price, 0),
+    createdAt: new Date().toISOString()
   };
 
   try {
-    // SAVE TO DATABASE
     await addDoc(collection(db, "orders"), orderData);
 
-    // SEND EMAIL TO YOU
-    await emailjs.send("SERVICE_ID","TEMPLATE_ID",{
+    await emailjs.send("SERVICE_ID", "TEMPLATE_ID", {
       name,
       email: emailVal,
       message: JSON.stringify(orderData, null, 2)
@@ -204,13 +248,12 @@ async function placeOrder() {
     showPage("home");
 
   } catch (err) {
-    alert("❌ Order failed. Try again.");
     console.error(err);
+    alert("❌ Order failed. Try again.");
   }
 
-  hideLoader();
+  endRequest();
 }
-
 
 /* =====================
    BACKGROUND MUSIC
@@ -218,9 +261,6 @@ async function placeOrder() {
 const bgMusic = document.getElementById("bgMusic");
 const musicIcon = document.getElementById("musicIcon");
 
-let musicEnabled = false;
-
-// Unlock audio on first user interaction
 document.addEventListener("click", () => {
   if (bgMusic) bgMusic.volume = 0.4;
 }, { once: true });
@@ -229,43 +269,40 @@ function toggleMusic() {
   if (!bgMusic || !musicIcon) return;
 
   if (bgMusic.paused) {
-    bgMusic.play().catch(() => {});
+    bgMusic.play().catch(()=>{});
     musicIcon.src = "images/UNMUTED.png";
-    musicEnabled = true;
+    localStorage.setItem("musicEnabled", "true");
   } else {
     bgMusic.pause();
     musicIcon.src = "images/MUTE.png";
-    musicEnabled = false;
+    localStorage.setItem("musicEnabled", "false");
   }
-
-  localStorage.setItem("musicEnabled", musicEnabled);
 }
 
 window.addEventListener("load", () => {
   const saved = localStorage.getItem("musicEnabled");
   if (saved === "true" && bgMusic) {
     bgMusic.volume = 0.4;
-    bgMusic.play().catch(() => {});
+    bgMusic.play().catch(()=>{});
     musicIcon.src = "images/UNMUTED.png";
   }
 });
 
-
-window.addEventListener("load", () => {
-  const saved = localStorage.getItem("musicEnabled");
-  if (saved === "true" && bgMusic) {
-    bgMusic.volume = 0.4;
-    bgMusic.play().catch(() => {});
-    musicIcon.src = "images/UNMUTED.png";
+/* =====================
+   GLOBAL IMAGE NETWORK TRACKING
+===================== */
+document.querySelectorAll("img").forEach(img => {
+  startRequest();
+  if (img.complete) {
+    endRequest();
+  } else {
+    img.onload = img.onerror = () => endRequest();
   }
 });
-document.addEventListener("DOMContentLoaded", () => {
-  showLoader();
-});
 
-window.addEventListener("load", () => {
-  hideLoader();
-});
+/* =====================
+   FIREBASE + EMAILJS
+===================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -277,7 +314,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
 emailjs.init("YOUR_PUBLIC_KEY");
-document.querySelectorAll("img").forEach(img=>{
-  img.onload = () => img.classList.add("loaded");
+
+/* =====================
+   INITIAL LOADER
+===================== */
+document.addEventListener("DOMContentLoaded", () => {
+  showLoader();
 });
+
+window.addEventListener("load", () => {
+  hideLoader();
+});
+
